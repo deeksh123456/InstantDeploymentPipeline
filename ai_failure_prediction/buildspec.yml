@@ -1,0 +1,31 @@
+
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - python --version
+      - pip install -r requirements.txt
+      - pip install ruff pytest
+
+  pre_build:
+    commands:
+      - echo "Starting Objective 5 validation"
+      - python code_analyzer.py sample_error_fixed.py
+      - python quality_check.py sample_error_fixed.py
+
+  build:
+    commands:
+      - echo "Checking Python compilation"
+      - python -m py_compile sample_error_fixed.py
+      - echo "Running automated tests"
+      - python -m pytest -q
+      - echo "Running deployment risk prediction"
+      - python predict.py --build-status success --tests-passed yes --changed-files 1 --previous-failures 0 --duration-minutes 3
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: no
