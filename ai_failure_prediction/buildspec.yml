@@ -13,8 +13,8 @@ phases:
   pre_build:
     commands:
       - echo "Starting Objective 5 validation"
-      - python ai_failure_prediction/code_analyzer.py ai_failure_prediction/sample_error_fixed.py
-      - python ai_failure_prediction/quality_check.py ai_failure_prediction/sample_error_fixed.py
+      - python ai_failure_prediction/code_analyzer.py ai_failure_prediction/sample_error.py
+      - python ai_failure_prediction/code_analyzer.py ai_failure_prediction/sample_error.py
 
   build:
     commands:
