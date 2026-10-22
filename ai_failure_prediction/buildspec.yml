@@ -7,25 +7,25 @@ phases:
       python: 3.11
     commands:
       - python --version
-      - python -m pip install -r requirements.txt
+      - python -m pip install -r ai_failure_prediction/requirements.txt
       - python -m pip install ruff pytest
 
   pre_build:
     commands:
       - echo "Starting Objective 5 validation"
-      - python code_analyzer.py sample_error_fixed.py
-      - python quality_check.py sample_error_fixed.py
+      - python ai_failure_prediction/code_analyzer.py ai_failure_prediction/sample_error_fixed.py
+      - python ai_failure_prediction/quality_check.py ai_failure_prediction/sample_error_fixed.py
 
   build:
     commands:
       - echo "Checking Python compilation"
-      - python -m py_compile sample_error_fixed.py
+      - python -m py_compile ai_failure_prediction/sample_error_fixed.py
       - echo "Running automated tests"
-      - python -m pytest -q
+      - python -m pytest -q ai_failure_prediction
       - echo "Running deployment risk prediction"
-      - python predict.py --build-status success --tests-passed yes --changed-files 1 --previous-failures 0 --duration-minutes 3
+      - python ai_failure_prediction/predict.py --build-status success --tests-passed yes --changed-files 1 --previous-failures 0 --duration-minutes 3
 
 artifacts:
   files:
-    - '**/*'
+    - 'ai_failure_prediction/**/*'
   discard-paths: no
