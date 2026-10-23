@@ -15,16 +15,23 @@ def analyze_python_files():
         ".pytest_cache",
     }
 
+    # Intentionally broken examples are tested separately.
+    excluded_files = {
+        "sample_error.py",
+    }
+
     python_files = []
 
     for path in root.rglob("*.py"):
         if any(part in excluded_dirs for part in path.parts):
             continue
 
-        # Ignore files inside this helper's generated/cache folders.
+        if path.name in excluded_files:
+            print(f"Skipping intentional error example: {path}")
+            continue
+
         python_files.append(path)
 
-    total_files = len(python_files)
     syntax_errors = []
     total_lines = 0
 
@@ -33,12 +40,7 @@ def analyze_python_files():
             source = path.read_text(encoding="utf-8")
             total_lines += len(source.splitlines())
             ast.parse(source, filename=str(path))
-        except (SyntaxError, UnicodeDecodeError) as error:
-            syntax_errors.append({
-                "file": str(path.relative_to(root)),
-                "error": str(error),
-            })
-        except OSError as error:
+        except (SyntaxError, UnicodeDecodeError, OSError) as error:
             syntax_errors.append({
                 "file": str(path.relative_to(root)),
                 "error": str(error),
@@ -46,7 +48,7 @@ def analyze_python_files():
 
     result = {
         "analysis_type": "source_snapshot",
-        "python_files_found": total_files,
+        "python_files_found": len(python_files),
         "total_python_lines": total_lines,
         "syntax_errors": syntax_errors,
         "syntax_check": "PASS" if not syntax_errors else "FAIL",
@@ -55,7 +57,7 @@ def analyze_python_files():
 
     print(json.dumps(result, indent=2))
 
-    if total_files == 0 or syntax_errors:
+    if not python_files or syntax_errors:
         return 1
 
     return 0
