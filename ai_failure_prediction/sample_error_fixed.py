@@ -1,3 +1,2 @@
-
-def test_failure(
-    print("Intentional syntax error for Objective 5 testing")
+def test_failure():
+    print("Objective 5 validation successful")
