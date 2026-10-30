@@ -1,2 +1,2 @@
-def test_failure():
-    print("Objective 5 validation successful")
+def greet():
+    return "Objective 5 validation successful"
